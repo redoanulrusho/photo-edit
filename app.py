@@ -26,51 +26,50 @@ if uploaded_file is not None:
     st.markdown("---")
     st.subheader("🎛️ Filter Controls")
 
+    final_img = img.copy()
+
     # Homogeneous Filter
     if st.checkbox("Apply Homogeneous Filter"):
         kernel_size = st.slider("Kernel Size (Homogeneous)", 1, 15, 5, step=2)
         kernel = np.ones((kernel_size, kernel_size), np.float32) / (kernel_size ** 2)
-        h_filter = cv2.filter2D(img, -1, kernel)
-        st.image(h_filter, caption="Homogeneous Filter", channels="BGR")
-        st.download_button("Download Homogeneous Filter", data=convert_to_bytes(h_filter),
-                           file_name="homogeneous.png", mime="image/png")
+        final_img = cv2.filter2D(final_img, -1, kernel)
+        st.image(final_img, caption="After Homogeneous Filter", channels="BGR")
 
     # Blur Filter
     if st.checkbox("Apply Blur Filter"):
         blur_size = st.slider("Kernel Size (Blur)", 1, 15, 8, step=1)
-        blur = cv2.blur(img, (blur_size, blur_size))
-        st.image(blur, caption="Blurred Image", channels="BGR")
-        st.download_button("Download Blurred Image", data=convert_to_bytes(blur),
-                           file_name="blurred.png", mime="image/png")
+        final_img = cv2.blur(final_img, (blur_size, blur_size))
+        st.image(final_img, caption="After Blur Filter", channels="BGR")
 
     # Gaussian Filter
     if st.checkbox("Apply Gaussian Filter"):
         gau_size = st.slider("Kernel Size (Gaussian)", 1, 15, 5, step=2)
-        gau = cv2.GaussianBlur(img, (gau_size, gau_size), 0)
-        st.image(gau, caption="Gaussian Blur", channels="BGR")
-        st.download_button("Download Gaussian Blur", data=convert_to_bytes(gau),
-                           file_name="gaussian.png", mime="image/png")
+        final_img = cv2.GaussianBlur(final_img, (gau_size, gau_size), 0)
+        st.image(final_img, caption="After Gaussian Filter", channels="BGR")
 
     # Median Filter
     if st.checkbox("Apply Median Filter"):
         med_size = st.slider("Kernel Size (Median)", 1, 15, 5, step=2)
-        med = cv2.medianBlur(img, med_size)
-        st.image(med, caption="Median Blur", channels="BGR")
-        st.download_button("Download Median Blur", data=convert_to_bytes(med),
-                           file_name="median.png", mime="image/png")
+        final_img = cv2.medianBlur(final_img, med_size)
+        st.image(final_img, caption="After Median Filter", channels="BGR")
 
     # Bilateral Filter
     if st.checkbox("Apply Bilateral Filter"):
         d = st.slider("Diameter", 1, 15, 9)
         sigma_color = st.slider("Sigma Color", 10, 150, 75)
         sigma_space = st.slider("Sigma Space", 10, 150, 75)
-        bi_f = cv2.bilateralFilter(img, d, sigma_color, sigma_space)
-        st.image(bi_f, caption="Bilateral Filter", channels="BGR")
-        st.download_button("Download Bilateral Filter", data=convert_to_bytes(bi_f),
-                           file_name="bilateral.png", mime="image/png")
+        final_img = cv2.bilateralFilter(final_img, d, sigma_color, sigma_space)
+        st.image(final_img, caption="After Bilateral Filter", channels="BGR")
 
     st.markdown("---")
-    st.info("Tip: Use sliders to fine-tune each filter. You can apply multiple filters and download your favorites!")
+    st.subheader("📥 Download Final Image")
+    st.download_button("Download Final Filtered Image",
+                       data=convert_to_bytes(final_img),
+                       file_name="final_filtered.png",
+                       mime="image/png")
+
+    st.markdown("---")
+    st.info("Tip: You can apply multiple filters in sequence and download the final result!")
 
 else:
     st.warning("Please upload an image to begin.")

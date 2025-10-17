@@ -28,6 +28,28 @@ if uploaded_file is not None:
 
     final_img = img.copy()
 
+    # Brightness Filter
+    if st.checkbox("Adjust Brightness"):
+        brightness = st.slider("Brightness Level", -100, 100, 0)
+        final_img = cv2.convertScaleAbs(final_img, alpha=1, beta=brightness)
+        st.image(final_img, caption="After Brightness Adjustment", channels="BGR")
+
+    # Black & White Filter
+    if st.checkbox("Convert to Black & White"):
+        gray = cv2.cvtColor(final_img, cv2.COLOR_BGR2GRAY)
+        final_img = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+        st.image(final_img, caption="Black & White", channels="BGR")
+
+    # Background Blur Simulation
+    if st.checkbox("Apply Background Blur"):
+        mask = np.zeros(final_img.shape[:2], dtype=np.uint8)
+        center = (final_img.shape[1] // 2, final_img.shape[0] // 2)
+        radius = st.slider("Focus Radius", 50, 200, 100)
+        cv2.circle(mask, center, radius, 255, -1)
+        blurred = cv2.GaussianBlur(final_img, (21, 21), 0)
+        final_img = np.where(mask[:, :, None] == 255, final_img, blurred)
+        st.image(final_img, caption="Background Blur", channels="BGR")
+
     # Homogeneous Filter
     if st.checkbox("Apply Homogeneous Filter"):
         kernel_size = st.slider("Kernel Size (Homogeneous)", 1, 15, 5, step=2)
